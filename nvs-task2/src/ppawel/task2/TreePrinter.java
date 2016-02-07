@@ -124,6 +124,8 @@ public class TreePrinter {
 			// Separator at the last level is always a single space
 			System.out.print(" ");
 		}
+
+		System.out.println();
 	}
 
 	/**
