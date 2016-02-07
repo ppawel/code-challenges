@@ -71,16 +71,35 @@ public class Task2 {
 	 */
 	private Map<String, Long> wordCounts = new HashMap<>();
 
+	/**
+	 * Points to the root of the tree after a {@link #constructTree()} call.
+	 */
 	private Node root;
 
+	/**
+	 * Reads tokens from given file and for every unique token sums up the
+	 * number of its occurrences.
+	 * 
+	 * @param file
+	 *            file to read
+	 * @throws FileNotFoundException
+	 *             if givenfile not found
+	 */
 	public void readWordCounts(File file) throws FileNotFoundException {
 		try (Scanner scanner = new Scanner(file)) {
 			scanner.forEachRemaining(word -> {
+				// If word does not exist yet: word count is 1
+				// If word exists: word count increments by 1
 				wordCounts.compute(word, (key, count) -> count == null ? 1 : count + 1);
 			});
 		}
 	}
 
+	/**
+	 * Constructs the tree according to task specification. After calling this
+	 * method tree root node can be accessed via {@link #root} or
+	 * {@link #getRoot()}.
+	 */
 	public void constructTree() {
 		PriorityQueue<Node> nodeQueue = new PriorityQueue<>();
 
