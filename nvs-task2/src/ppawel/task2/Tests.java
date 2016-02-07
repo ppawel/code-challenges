@@ -11,7 +11,14 @@ import java.io.FileNotFoundException;
  */
 public class Tests {
 
+	private static String testDir = "testdata/";
+
 	public static void main(String[] args) throws FileNotFoundException {
+		if (args.length > 0) {
+			// Test dir specified on command line
+			testDir = args[0];
+		}
+
 		testReferenceExample();
 		testOneWord();
 		testEmpty();
@@ -20,7 +27,7 @@ public class Tests {
 	}
 
 	public static void testReferenceExample() throws FileNotFoundException {
-		Task2 task = Task2.runTaskWithFile(new File("testdata/test_example.txt"));
+		Task2 task = Task2.runTaskWithFile(new File(testDir, "test_example.txt"));
 		if (task.getWordCounts().get("had") != 2) {
 			throw new IllegalStateException();
 		}
@@ -39,7 +46,7 @@ public class Tests {
 	}
 
 	public static void testOneWord() throws FileNotFoundException {
-		Task2 task = Task2.runTaskWithFile(new File("testdata/test_one_word.txt"));
+		Task2 task = Task2.runTaskWithFile(new File(testDir, "test_one_word.txt"));
 		if (task.getWordCounts().get("one") != 1) {
 			throw new IllegalStateException();
 		}
@@ -55,7 +62,7 @@ public class Tests {
 	}
 
 	public static void testEmpty() throws FileNotFoundException {
-		Task2 task = Task2.runTaskWithFile(new File("testdata/test_empty.txt"));
+		Task2 task = Task2.runTaskWithFile(new File(testDir, "test_empty.txt"));
 		if (!task.getWordCounts().isEmpty()) {
 			throw new IllegalStateException();
 		}
@@ -65,12 +72,12 @@ public class Tests {
 	}
 
 	public static void testLong() throws FileNotFoundException {
-		Task2 task = Task2.runTaskWithFile(new File("testdata/test_long.txt"));
+		Task2 task = Task2.runTaskWithFile(new File(testDir, "test_long.txt"));
 		System.out.println(task.getWordCounts());
 	}
 
 	public static void testCat() throws FileNotFoundException {
-		Task2 task = Task2.runTaskWithFile(new File("testdata/test_cat.txt"));
+		Task2 task = Task2.runTaskWithFile(new File(testDir, "test_cat.txt"));
 		if (task.getWordCounts().get("cat") != 272) {
 			throw new IllegalStateException();
 		}
