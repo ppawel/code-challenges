@@ -15,7 +15,7 @@ public class TreePrinter {
 
 	/**
 	 * Max node width - max number of characters to reserve for a single tree
-	 * node (always an odd number).
+	 * node (always an odd number). This is used to properly align nodes.
 	 */
 	private long maxNodeWidth;
 
@@ -24,62 +24,104 @@ public class TreePrinter {
 	 */
 	private long treeHeight;
 
+	/**
+	 * Prints a tree to stdout.
+	 * 
+	 * @param root
+	 *            root node of the tree to print;
+	 * @param maxNodeWidth
+	 *            maximum width (in characters) of a single node content
+	 */
 	public void print(Node root, long maxNodeWidth) {
+		// Make sure max node width is an odd number - simplifies the
+		// printing implementation.
 		this.maxNodeWidth = maxNodeWidth % 2 == 0 ? (maxNodeWidth + 1) : maxNodeWidth;
+
+		// Calculate tree height - needed to calculate subtree width
 		treeHeight = getTreeHeight(root);
-		printNodes(Collections.singletonList(root), 1);
-	}
 
-	private void printNodes(List<Node> nodes, long level) {
-		List<Node> nextLevel = getNextLevel(nodes);
+		// Print the tree level by level, starting at the root node (level 1)
 
-		if (level < treeHeight) {
+		List<Node> nodes = Collections.singletonList(root);
+
+		for (int level = 1; level < treeHeight; level++) {
 			printLevel(nodes, level);
-			System.out.println();
-
-			if (!isLevelEmpty(nextLevel)) {
-				printNodes(nextLevel, level + 1);
-			}
-		} else {
-			printLastLevel(nodes);
+			nodes = getNextLevel(nodes);
 		}
+
+		printLastLevel(nodes);
 	}
 
+	/**
+	 * Prints a list of nodes from the same level to standard output. This
+	 * method prints exactly one line with the newline character at the end.
+	 * 
+	 * @param nodes
+	 *            list of nodes, including <code>null</code> values for non
+	 *            existing nodes
+	 * @param level
+	 *            level number
+	 */
 	private void printLevel(List<Node> nodes, long level) {
 		long subtreeHeight = treeHeight - level + 1;
 		long subtreeWidth = 0;
+		long leafCount = (long) Math.pow(2, subtreeHeight - 1);
 
-		if (level < treeHeight) {
-			subtreeWidth = (long) (maxNodeWidth * Math.pow(2, subtreeHeight - 1) + Math.pow(2, subtreeHeight - 1));
-			System.out.print(repeat(" ", (long) (subtreeWidth / 2.0 - maxNodeWidth / 2 - 1)));
-		}
-		int i = 0;
+		// Calculate width of a subtree at the current level - this is done by
+		// calculating the number of leafs of the subtree and adding spaces
+		// which separate leafs at the last level.
+		subtreeWidth = (long) (maxNodeWidth * leafCount // total width of
+														// content of the leaf
+														// nodes
+				+ leafCount // each leaf is followed by a space + one space to
+							// follow the whole subtree
+		);
 
-		for (Node node : nodes) {
-			i++;
+		// Print out preceding spaces in the line - first node of the level must
+		// be printed out centered in relation to its subtree.
+		printSpaces((long) (subtreeWidth / 2.0 - maxNodeWidth / 2 - 1));
 
-			String separator = "";
-
-			if (i > 0) {
-				separator = repeat(" ", subtreeWidth - maxNodeWidth);
-			}
+		for (int i = 1; i <= nodes.size(); i++) {
+			Node node = nodes.get(i - 1);
 
 			if (node != null) {
+				// Print current node
 				printNodeValue(node);
-				System.out.print(separator);
 			} else {
-				System.out.print(repeat(" ", maxNodeWidth) + separator);
+				// If node doesn't exist, just print empty string to fill the
+				// space and keep proper alignment.
+				printSpaces(maxNodeWidth);
 			}
+
+			// Print out a separator - this moves the printing caret to the next
+			// subtree in a centered position in relation to that subtree's
+			// width.
+			printSpaces(subtreeWidth - maxNodeWidth);
 		}
+
+		System.out.println();
 	}
 
+	/**
+	 * Prints out the last level which is a special case because we assume that
+	 * all nodes (leafs) are separated by a single space and there is no
+	 * preceding whitespace.
+	 * 
+	 * @param nodes
+	 *            list of nodes for the level
+	 */
 	private void printLastLevel(List<Node> nodes) {
 		for (Node node : nodes) {
-			if (node == null) {
-				System.out.print(repeat(" ", maxNodeWidth + 1));
-				continue;
+			if (node != null) {
+				// Print node value
+				printNodeValue(node);
+			} else {
+				// Node doesn't exist - print empty placeholder to keep
+				// proper alignment.
+				printSpaces(maxNodeWidth);
 			}
-			printNodeValue(node);
+
+			// Separator at the last level is always a single space
 			System.out.print(" ");
 		}
 	}
@@ -100,13 +142,31 @@ public class TreePrinter {
 		return Math.max(getTreeHeight(node.getLeft()), getTreeHeight(node.getRight())) + 1;
 	}
 
+	/**
+	 * Prints out node value ({@link Node#getWordCount()}). Properly aligns the
+	 * value according to max node width.
+	 * <p>
+	 * For example, if node value is 3 and {@link #maxNodeWidth} is 5 then this
+	 * method prints out string "  3  ".
+	 * 
+	 * @param node
+	 */
 	private void printNodeValue(Node node) {
 		long padding = maxNodeWidth - String.valueOf(node.getWordCount()).length();
-		System.out.print(repeat(" ", padding / 2));
+		printSpaces(padding / 2);
 		System.out.print(node.getWordCount());
-		System.out.print(repeat(" ", padding / 2));
+		printSpaces(padding / 2);
 	}
 
+	/**
+	 * For given nodes, retrieves next level - all child nodes or
+	 * <code>null</code> when there are not child nodes.
+	 * 
+	 * @param nodes
+	 *            nodes to process
+	 * @return list of child nodes including <code>null</code> values for
+	 *         non-existing child nodes
+	 */
 	private List<Node> getNextLevel(List<Node> nodes) {
 		List<Node> result = new LinkedList<>();
 		for (Node node : nodes) {
@@ -121,15 +181,15 @@ public class TreePrinter {
 		return result;
 	}
 
-	private boolean isLevelEmpty(List<Node> nextLevel) {
-		return nextLevel.stream().allMatch(node -> node == null);
-	}
-
-	private String repeat(String str, long count) {
-		StringBuilder result = new StringBuilder((int) count);
+	/**
+	 * Prints given number of spaces to stdout.
+	 * 
+	 * @param count
+	 *            number of spaces to print
+	 */
+	private void printSpaces(long count) {
 		for (int i = 0; i < count; i++) {
-			result.append(str);
+			System.out.print(" ");
 		}
-		return result.toString();
 	}
 }
