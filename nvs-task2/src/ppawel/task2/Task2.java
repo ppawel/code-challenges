@@ -42,8 +42,10 @@ public class Task2 {
 		// Print out word counts
 		System.out.println(task.getWordCounts());
 
+		Long maxWordCount = task.getWordCounts().values().stream().reduce(Long::max).orElse(0l);
+
 		// Print out the tree
-		new TreePrinter().printTree(task.getRoot());
+		new TreePrinter().print(task.getRoot(), String.valueOf(maxWordCount).length());
 	}
 
 	/**
