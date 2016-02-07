@@ -15,7 +15,7 @@ public class TreePrinter {
 
 	/**
 	 * Max node width - max number of characters to reserve for a single tree
-	 * node (always an odd number). This is used to properly align nodes.
+	 * node. This is used to properly align nodes.
 	 */
 	private long maxNodeWidth;
 
@@ -29,21 +29,17 @@ public class TreePrinter {
 	 * 
 	 * @param root
 	 *            root node of the tree to print;
-	 * @param maxNodeWidth
+	 * @param width
 	 *            maximum width (in characters) of a single node content
 	 */
-	public void print(Node root, long maxNodeWidth) {
-		// Make sure max node width is an odd number - simplifies the
-		// printing implementation.
-		this.maxNodeWidth = maxNodeWidth % 2 == 0 ? (maxNodeWidth + 1) : maxNodeWidth;
+	public void print(Node root, long width) {
+		this.maxNodeWidth = width;
 
 		// Calculate tree height - needed to calculate subtree width
 		treeHeight = getTreeHeight(root);
 
 		// Print the tree level by level, starting at the root node (level 1)
-
 		List<Node> nodes = Collections.singletonList(root);
-
 		for (int level = 1; level < treeHeight; level++) {
 			printLevel(nodes, level);
 			nodes = getNextLevel(nodes);
@@ -157,7 +153,7 @@ public class TreePrinter {
 		long padding = maxNodeWidth - String.valueOf(node.getWordCount()).length();
 		printSpaces(padding / 2);
 		System.out.print(node.getWordCount());
-		printSpaces(padding / 2);
+		printSpaces((long) Math.ceil(padding / 2.0));
 	}
 
 	/**

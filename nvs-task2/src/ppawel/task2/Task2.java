@@ -32,7 +32,7 @@ public class Task2 {
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		if (args.length != 1) {
-			System.out.println("Usage: Task2 <path to file>");
+			System.out.println("Usage: java ppawel.task2.Task2 <path to file>");
 			System.exit(1);
 		}
 
@@ -42,10 +42,8 @@ public class Task2 {
 		// Print out word counts
 		System.out.println(task.getWordCounts());
 
-		Long maxWordCount = task.getWordCounts().values().stream().reduce(Long::max).orElse(0l);
-
 		// Print out the tree
-		new TreePrinter().print(task.getRoot(), String.valueOf(maxWordCount).length());
+		new TreePrinter().print(task.getRoot(), 3);
 	}
 
 	/**
@@ -105,7 +103,7 @@ public class Task2 {
 
 		// Add new node to the queue for every unique word together with its
 		// word count.
-		wordCounts.forEach((word, count) -> nodeQueue.offer(new Node(count, word)));
+		wordCounts.forEach((word, count) -> nodeQueue.offer(new Node(count)));
 
 		// Now let's build the tree!
 		while (!nodeQueue.isEmpty()) {
