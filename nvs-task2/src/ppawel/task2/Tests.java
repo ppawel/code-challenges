@@ -3,11 +3,20 @@ package ppawel.task2;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+/**
+ * Simple test suite for task2. Uses text files from testdata directory.
+ * 
+ * @author ppawel
+ *
+ */
 public class Tests {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		testReferenceExample();
 		testOneWord();
+		testEmpty();
+		testLong();
+		testCat();
 	}
 
 	public static void testReferenceExample() throws FileNotFoundException {
@@ -41,6 +50,31 @@ public class Tests {
 			throw new IllegalStateException();
 		}
 		if (task.getRoot().getLeft() != null || task.getRoot().getRight() != null) {
+			throw new IllegalStateException();
+		}
+	}
+
+	public static void testEmpty() throws FileNotFoundException {
+		Task2 task = Task2.runTaskWithFile(new File("testdata/test_empty.txt"));
+		if (!task.getWordCounts().isEmpty()) {
+			throw new IllegalStateException();
+		}
+		if (task.getRoot() != null) {
+			throw new IllegalStateException();
+		}
+	}
+
+	public static void testLong() throws FileNotFoundException {
+		Task2 task = Task2.runTaskWithFile(new File("testdata/test_long.txt"));
+		System.out.println(task.getWordCounts());
+	}
+
+	public static void testCat() throws FileNotFoundException {
+		Task2 task = Task2.runTaskWithFile(new File("testdata/test_cat.txt"));
+		if (task.getWordCounts().get("cat") != 272) {
+			throw new IllegalStateException();
+		}
+		if (task.getRoot().getWordCount() != 272) {
 			throw new IllegalStateException();
 		}
 	}
